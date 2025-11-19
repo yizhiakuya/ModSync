@@ -2,7 +2,7 @@
 
 一个自动同步服务器 mod 的 Minecraft 模组，让玩家无需手动下载服务器所需的 mod。
 
-🔗 **GitHub**: [https://github.com/yizhiakuya/mcmod](https://github.com/yizhiakuya/mcmod)
+🔗 **GitHub**: [https://github.com/yizhiakuya/ModSync](https://github.com/yizhiakuya/ModSync)
 
 ## ✨ 功能特点
 
@@ -102,7 +102,7 @@ A: 当前版本仅支持 1.21.1 + NeoForge。
 
 ## 📄 许可证
 
-本项目采用 [MIT License](LICENSE) 开源。
+本项目采用 [MIT License](mod/LICENSE) 开源。
 
 ## ⚠️ 免责声明
 
@@ -130,6 +130,6 @@ A: 当前版本仅支持 1.21.1 + NeoForge。
 
 ## 📮 联系方式
 
-- **GitHub 仓库**: [https://github.com/yizhiakuya/mcmod](https://github.com/yizhiakuya/mcmod)
-- **问题反馈**: 请在 [GitHub Issues](https://github.com/yizhiakuya/mcmod/issues) 提交
+- **GitHub 仓库**: [https://github.com/yizhiakuya/ModSync](https://github.com/yizhiakuya/ModSync)
+- **问题反馈**: 请在 [GitHub Issues](https://github.com/yizhiakuya/ModSync/issues) 提交
 - 欢迎 Star ⭐ 和 Fork 🍴
