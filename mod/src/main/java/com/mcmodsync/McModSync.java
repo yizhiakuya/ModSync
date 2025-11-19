@@ -1,5 +1,6 @@
 package com.mcmodsync;
 
+import com.mcmodsync.config.ModSyncConfig;
 import com.mojang.logging.LogUtils;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -13,6 +14,8 @@ public class McModSync {
 
     public McModSync(IEventBus modEventBus, ModContainer modContainer) {
         LOGGER.info("MC Mod Sync initializing...");
+        // Load configuration
+        ModSyncConfig.getInstance();
         // NetworkHandler 使用 @EventBusSubscriber 自动注册
     }
 }

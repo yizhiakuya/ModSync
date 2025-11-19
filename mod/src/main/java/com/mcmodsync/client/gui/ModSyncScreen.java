@@ -2,8 +2,10 @@ package com.mcmodsync.client.gui;
 
 import com.mcmodsync.McModSync;
 import com.mcmodsync.client.ModDownloader;
+import com.mcmodsync.config.ModSyncConfig;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Checkbox;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -15,6 +17,8 @@ public class ModSyncScreen extends Screen {
     private final Screen lastScreen;
     private EditBox serverAddressBox;
     private Button syncButton;
+    private Button saveConfigButton;
+    private Checkbox autoSyncCheckbox;
     private String statusMessage;
     private int statusColor;
     private final List<String> downloadLog;
@@ -33,31 +37,75 @@ public class ModSyncScreen extends Screen {
     protected void init() {
         super.init();
 
-        // 服务器地址输入框
+        ModSyncConfig config = ModSyncConfig.getInstance();
+
+        // 服务器地址输入框 - 移到更高的位置
         this.serverAddressBox = new EditBox(
             this.font,
             this.width / 2 - 100,
-            this.height / 2 - 30,
+            this.height / 2 - 100,
             200,
             20,
             Component.literal("服务器地址")
         );
         this.serverAddressBox.setMaxLength(128);
-        this.serverAddressBox.setValue("http://localhost:56552");
+        this.serverAddressBox.setValue(config.getServerAddress());
         this.addRenderableWidget(this.serverAddressBox);
+
+        // 保存配置按钮
+        this.saveConfigButton = Button.builder(
+            Component.literal("保存配置"),
+            button -> this.saveConfig()
+        ).bounds(this.width / 2 - 100, this.height / 2 - 70, 200, 20).build();
+        this.addRenderableWidget(this.saveConfigButton);
+
+        // 自动同步复选框
+        this.autoSyncCheckbox = Checkbox.builder(
+            Component.literal("游戏启动时自动同步"),
+            this.font
+        )
+        .pos(this.width / 2 - 100, this.height / 2 - 35)
+        .selected(config.isAutoSync())
+        .build();
+        this.addRenderableWidget(this.autoSyncCheckbox);
 
         // 同步按钮
         this.syncButton = Button.builder(
             Component.literal("开始同步"),
             button -> this.startSync()
-        ).bounds(this.width / 2 - 100, this.height / 2 + 10, 200, 20).build();
+        ).bounds(this.width / 2 - 100, this.height / 2 - 5, 200, 20).build();
         this.addRenderableWidget(this.syncButton);
 
         // 返回按钮
         this.addRenderableWidget(Button.builder(
             Component.literal("返回"),
             button -> this.minecraft.setScreen(this.lastScreen)
-        ).bounds(this.width / 2 - 100, this.height / 2 + 40, 200, 20).build());
+        ).bounds(this.width / 2 - 100, this.height / 2 + 25, 200, 20).build());
+    }
+
+    private void saveConfig() {
+        String serverAddress = this.serverAddressBox.getValue().trim();
+        if (serverAddress.isEmpty()) {
+            this.statusMessage = "请输入服务器地址";
+            this.statusColor = 0xFF5555;
+            return;
+        }
+
+        try {
+            ModSyncConfig config = ModSyncConfig.getInstance();
+            config.setServerAddress(serverAddress);
+            config.setAutoSync(this.autoSyncCheckbox.selected());
+            config.save();
+
+            this.statusMessage = "§a配置已保存";
+            this.statusColor = 0x55FF55;
+            McModSync.LOGGER.info("Config saved: serverAddress={}, autoSync={}", 
+                serverAddress, this.autoSyncCheckbox.selected());
+        } catch (Exception e) {
+            this.statusMessage = "§c保存配置失败: " + e.getMessage();
+            this.statusColor = 0xFF5555;
+            McModSync.LOGGER.error("Failed to save config", e);
+        }
     }
 
     private void startSync() {
@@ -66,6 +114,18 @@ public class ModSyncScreen extends Screen {
             this.statusMessage = "请输入服务器地址";
             this.statusColor = 0xFF5555;
             return;
+        }
+
+        // 开始同步前自动保存配置
+        try {
+            ModSyncConfig config = ModSyncConfig.getInstance();
+            config.setServerAddress(serverAddress);
+            config.setAutoSync(this.autoSyncCheckbox.selected());
+            config.save();
+            McModSync.LOGGER.info("Auto-saved config before sync");
+        } catch (Exception e) {
+            McModSync.LOGGER.error("Failed to auto-save config", e);
+            // 即使保存失败也继续同步
         }
 
         this.syncButton.active = false;
@@ -137,15 +197,15 @@ public class ModSyncScreen extends Screen {
             this.font,
             "服务器 API 地址:",
             this.width / 2,
-            this.height / 2 - 50,
+            this.height / 2 - 120,
             0xAAAAAA
         );
 
-        // 状态框背景
+        // 状态框背景 - 放在按钮下方，留出足够空间
         int statusBoxX = this.width / 2 - 150;
-        int statusBoxY = this.height / 2 + 60;
+        int statusBoxY = this.height / 2 + 55;
         int statusBoxWidth = 300;
-        int statusBoxHeight = 100;
+        int statusBoxHeight = 120;
         
         // 半透明黑色背景
         graphics.fill(statusBoxX, statusBoxY, statusBoxX + statusBoxWidth, statusBoxY + statusBoxHeight, 0xDD000000);
@@ -172,10 +232,11 @@ public class ModSyncScreen extends Screen {
             this.statusColor
         );
 
-        // 下载日志
+        // 下载日志 - 显示更多行以利用增大的状态框
         if (!this.downloadLog.isEmpty()) {
             int logY = statusBoxY + 35;
-            for (int i = Math.max(0, this.downloadLog.size() - 5); i < this.downloadLog.size(); i++) {
+            int maxLines = 8; // 增加显示行数
+            for (int i = Math.max(0, this.downloadLog.size() - maxLines); i < this.downloadLog.size(); i++) {
                 String log = this.downloadLog.get(i);
                 graphics.drawString(
                     this.font,
