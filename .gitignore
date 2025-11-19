@@ -1,0 +1,26 @@
+# Gradle
+mod/.gradle/
+mod/build/
+mod/run/
+mod/.idea/
+mod/*.iml
+mod/*.ipr
+mod/*.iws
+
+# Test Server - Exclude entire directory
+test-server/
+
+# Installers - Exclude entire directory
+installers/
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
