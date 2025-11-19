@@ -100,6 +100,57 @@ A: 是的，下载新 mod 后必须重启游戏才能加载。
 **Q: 支持哪些 Minecraft 版本？**  
 A: 当前版本仅支持 1.21.1 + NeoForge。
 
+## 🔨 构建项目
+
+### 环境要求
+- Java 21 JDK
+- Git（可选）
+
+### 构建步骤
+
+1. **克隆仓库**
+```bash
+git clone https://github.com/yizhiakuya/ModSync.git
+cd ModSync/mod
+```
+
+2. **使用 Gradle 构建**
+
+Windows:
+```bash
+.\gradlew.bat build
+```
+
+Linux/Mac:
+```bash
+./gradlew build
+```
+
+3. **获取构建结果**
+
+构建成功后，jar 文件位于：
+```
+mod/build/libs/mcmodsync-1.0.0.jar
+```
+
+### 开发测试
+
+**启动客户端测试：**
+```bash
+.\gradlew.bat runClient
+```
+
+**启动服务器测试：**
+```bash
+.\gradlew.bat runServer
+```
+
+### 清理构建
+
+```bash
+.\gradlew.bat clean
+```
+
 ## 📄 许可证
 
 本项目采用 [MIT License](mod/LICENSE) 开源。
